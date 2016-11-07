@@ -22,13 +22,14 @@ Bundle 'scrooloose/syntastic'
 Bundle 'elzr/vim-json'
 Bundle 'vim-scripts/searchfold.vim'
 Bundle 'pbrisbin/html-template-syntax'
+Bundle 'mattn/emmet-vim'
 Bundle 'Shougo/vimproc'
 Bundle 'eagletmt/ghcmod-vim'
 Bundle 'vim-airline/vim-airline'
 Bundle 'eagletmt/neco-ghc'
-Bundle 'Shougo/unite.vim'
-Bundle 'vim-scripts/vcscommand.vim'
 Bundle 'dkprice/vim-easygrep'
+" Alternate between .h .c usage -> :A
+Bundle 'vim-scripts/a.vim'
 " pep8 python indenting
 Bundle 'vim-scripts/indentpython.vim'
 " Support for C++11 syntax
@@ -37,6 +38,9 @@ Bundle 'vim-jp/cpp-vim'
 Bundle 'rodjek/vim-puppet'
 " Support for JavaScript
 Bundle 'pangloss/vim-javascript'
+Bundle 'jelera/vim-javascript-syntax'
+" Support for GoLang
+Bundle 'fatih/vim-go'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -47,6 +51,8 @@ filetype plugin indent on     " required!
 let g:syntastic_python_flake8_args="--max-line-length=120"
 let g:syntastic_python_pylint_args="--max-line-length=120"
 let python_highlight_all=1
+let g:syntastic_python_checkers = ['pylint']
+let g:syntastic_javascript_checkers = ['jshint']
 
 " NertTree
 map <silent> <C-n> :NERDTreeToggle<CR>
@@ -66,17 +72,47 @@ augroup END
 set laststatus=2
 set statusline=%t\ %y\ format:\ %{&ff};\ [%c,%l]
 
+" vim-airline tabs
+let g:airline#extensions#tabline#enabled = 1
+
+" List buffers and cycle
+nnoremap <C-b> :bd<CR>
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+
+" Switch window mappings /*{{{*/
+nnoremap <A-Up> :normal <c-r>=SwitchWindow('+')<CR><CR>
+nnoremap <A-Down> :normal <c-r>=SwitchWindow('-')<CR><CR>
+nnoremap <A-Left> :normal <c-r>=SwitchWindow('<')<CR><CR>
+nnoremap <A-Right> :normal <c-r>=SwitchWindow('>')<CR><CR>
+
+function! SwitchWindow(dir)
+  let this = winnr()
+  if '+' == a:dir
+    execute "normal \<c-w>k"
+    elseif '-' == a:dir
+    execute "normal \<c-w>j"
+    elseif '>' == a:dir
+    execute "normal \<c-w>l"
+    elseif '<' == a:dir
+    execute "normal \<c-w>h"
+  else
+    echo "oops. check your ~/.vimrc"
+    return ""
+  endif
+endfunction
+" /*}}}*/
+
+
 set wildmode=longest:full
 set wildmenu
 set wildignore+=external/boost,*.o,*.obj,*.git,*.pyc
 
 " Python indenting
-set tabstop=4
-set shiftwidth=4
-set expandtab
+set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab
 set colorcolumn=120
 highlight BadWhitespace ctermbg=red guibg=red
-au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp match BadWhitespace /\s\+$/
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp,*js,*.html,*.css match BadWhitespace /\s\+$/
 
 "python with virtualenv support
 py << EOF
@@ -88,19 +124,40 @@ if 'VIRTUAL_ENV' in os.environ:
   execfile(activate_this, dict(__file__=activate_this))
 EOF
 
+" If you prefer the Omni-Completion tip window to close when a selection is
+" " made, these lines close it on movement in insert mode or when leaving
+" insert mode
+autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
+
 " SCons
 au BufNewFile,BufRead SCons* set filetype=scons
 
-set synmaxcol=150
+set synmaxcol=500
 
 " enable filetype detection, plus loading of filetype plugins
 filetype plugin on
 
-" pastemode
-:set pastetoggle=<F10>
 
+" FN Mappings
 " key mappings for YCM
 map <F3> :YcmCompleter GoToDefinitionElseDeclaration<CR>
+" F4 Find current word on file
+nnoremap <F4> :let @/.='\\|\<'.expand("<cword>").'\>'<CR>
+" Refresh some file edited by external resource
+nnoremap <F5> :edit!
+" F6 switch windows
+map <F6> <C-W>w
+" pastemode
+nnoremap <F10> :set invpaste paste?<CR>
+set pastetoggle=<F10>
+set showmode
+" emmet C-Y
+let g:user_emmet_leader_key='<C-Y>'
+
+set encoding=utf-8
+set fileencoding=utf-8
 " let g:ycm_server_use_vim_stdout = 1
 " let g:ycm_server_log_level = 'debug'
 " let g:ycm_server_keep_logfiles = 1
@@ -115,5 +172,20 @@ let g:EasyGrepRecursive = 1
 let g:EasyGrepCommand = 1
 let g:EasyGrepFilesToExclude = ".git,node_modules,bower_components"
 
-" YouCompleteMe tab
+"ctrlP tools
+"let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](node_modules|bower_components)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ }
+
+" Map Copy to clipboard
+map <C-c> "+y<CR>
+
+" Emmet only available on html css files
+let g:user_emmet_install_global = 0
+autocmd FileType html,css EmmetInstall
+
+
+
 
