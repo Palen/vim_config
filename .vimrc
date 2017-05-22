@@ -39,6 +39,8 @@ Bundle 'rodjek/vim-puppet'
 " Support for JavaScript
 Bundle 'pangloss/vim-javascript'
 Bundle 'jelera/vim-javascript-syntax'
+" Support for node
+Bundle 'moll/vim-node'
 " Support for GoLang
 Bundle 'fatih/vim-go'
 
@@ -53,7 +55,14 @@ let g:syntastic_python_pylint_args="--max-line-length=120"
 let python_highlight_all=1
 let g:syntastic_python_checkers = ['pylint']
 let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_cpp_checkers = ['gcc']
+let g:syntastic_html_tidy_exec = '/usr/bin/tidy'
 
+"
+"" YouCompleteMe options
+let g:ycm_register_as_syntastic_checker = 1 "default 1
+let g:Show_diagnostics_ui = 1 "default 1
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleMe/cpp/ycm/.ycm_extra_conf.py'
 " NertTree
 map <silent> <C-n> :NERDTreeToggle<CR>
 
@@ -75,8 +84,10 @@ set statusline=%t\ %y\ format:\ %{&ff};\ [%c,%l]
 " vim-airline tabs
 let g:airline#extensions#tabline#enabled = 1
 
+command Bd bp\|bd \#
+
 " List buffers and cycle
-nnoremap <C-b> :bd<CR>
+nnoremap <C-b> :Bd<CR>
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
 
@@ -109,19 +120,26 @@ set wildmenu
 set wildignore+=external/boost,*.o,*.obj,*.git,*.pyc
 
 " Python indenting
-set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab
+"set tabstop=4 
+"set softtabstop=0 expandtab shiftwidth=4 smarttab
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set smarttab
+set autoindent
+set smartindent
 set colorcolumn=120
 highlight BadWhitespace ctermbg=red guibg=red
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp,*js,*.html,*.css match BadWhitespace /\s\+$/
 
 "python with virtualenv support
-py << EOF
+py3 << EOF
 import os
 import sys
 if 'VIRTUAL_ENV' in os.environ:
   project_base_dir = os.environ['VIRTUAL_ENV']
   activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-  execfile(activate_this, dict(__file__=activate_this))
+  exec(open(activate_this).read(), dict(__file__=activate_this))
 EOF
 
 " If you prefer the Omni-Completion tip window to close when a selection is
@@ -186,6 +204,6 @@ map <C-c> "+y<CR>
 let g:user_emmet_install_global = 0
 autocmd FileType html,css EmmetInstall
 
-
-
+" show hidden files NerdTree
+let NERDTreeShowHidden=1
 
