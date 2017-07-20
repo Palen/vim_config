@@ -25,7 +25,10 @@ Bundle 'pbrisbin/html-template-syntax'
 Bundle 'mattn/emmet-vim'
 Bundle 'Shougo/vimproc'
 Bundle 'eagletmt/ghcmod-vim'
+" Tabs and stuff
 Bundle 'vim-airline/vim-airline'
+" Buffer kill without losing split window
+Bundle 'qpkorr/vim-bufkill'
 Bundle 'eagletmt/neco-ghc'
 Bundle 'dkprice/vim-easygrep'
 " Alternate between .h .c usage -> :A
@@ -83,11 +86,10 @@ set statusline=%t\ %y\ format:\ %{&ff};\ [%c,%l]
 
 " vim-airline tabs
 let g:airline#extensions#tabline#enabled = 1
-
-command Bd bp\|bd \#
+" buffkill C+space
+map <C-b> :BD<cr>
 
 " List buffers and cycle
-nnoremap <C-b> :Bd<CR>
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
 
@@ -206,4 +208,3 @@ autocmd FileType html,css EmmetInstall
 
 " show hidden files NerdTree
 let NERDTreeShowHidden=1
-
