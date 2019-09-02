@@ -12,7 +12,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 " let Vundle manage Vundle
-" required! 
+" required!
 Bundle 'gmarik/Vundle.vim'
 Bundle 'scrooloose/nerdtree'
 Bundle 'ctrlpvim/ctrlp.vim'
@@ -42,6 +42,7 @@ Bundle 'rodjek/vim-puppet'
 " Support for JavaScript
 Bundle 'pangloss/vim-javascript'
 Bundle 'jelera/vim-javascript-syntax'
+Bundle 'mxw/vim-jsx'
 " Support for node
 Bundle 'moll/vim-node'
 " Support for GoLang
@@ -70,8 +71,8 @@ let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleMe/cpp/ycm/.ycm_extra_
 map <silent> <C-n> :NERDTreeToggle<CR>
 
 " Mediawiki
-augroup filetypedetect 
-au BufNewFile,BufRead *.wiki setf Wikipedia 
+augroup filetypedetect
+au BufNewFile,BufRead *.wiki setf Wikipedia
 augroup END
 
 " Highlight search
@@ -122,7 +123,7 @@ set wildmenu
 set wildignore+=external/boost,*.o,*.obj,*.git,*.pyc
 
 " Python indenting
-"set tabstop=4 
+"set tabstop=4
 "set softtabstop=0 expandtab shiftwidth=4 smarttab
 set tabstop=4
 set shiftwidth=4
@@ -133,9 +134,10 @@ set smartindent
 set colorcolumn=120
 highlight BadWhitespace ctermbg=red guibg=red
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp,*js,*.html,*.css match BadWhitespace /\s\+$/
+autocmd BufWritePre * %s/\s\+$//e
 
 "python with virtualenv support
-py3 << EOF
+py << EOF
 import os
 import sys
 if 'VIRTUAL_ENV' in os.environ:
@@ -159,6 +161,7 @@ set synmaxcol=500
 " enable filetype detection, plus loading of filetype plugins
 filetype plugin on
 
+set backspace=indent,eol,start
 
 " FN Mappings
 " key mappings for YCM
